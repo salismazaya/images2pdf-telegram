@@ -23,7 +23,7 @@ Made with love by @salismiftah
 		"""
 
 	markup = types.InlineKeyboardMarkup()
-	markup.add(types.InlineKeyboardButton("Source code this bot", url = "https://github.com/salismazaya/image2pdf-telegram"))
+	markup.add(types.InlineKeyboardButton("Source code this bot", url = "https://github.com/salismazaya/images2pdf-telegram"))
 	bot.send_message(message.from_user.id, msg, reply_markup = markup, parse_mode = "Markdown")
 
 @bot.message_handler(content_types = ["photo"])
