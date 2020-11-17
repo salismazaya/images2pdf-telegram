@@ -66,4 +66,5 @@ def done(message):
 	bot.send_document(message.from_user.id, open(path, "rb"), caption = "Here your pdf !!")
 	os.remove(path)
 
-bot.polling()
+print("Bot started !!")
+bot.polling(none_stop = True)
