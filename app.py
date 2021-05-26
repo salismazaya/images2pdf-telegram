@@ -1,10 +1,16 @@
 from telebot import TeleBot, types
+from flask import Flask, request
 from io import BytesIO
 from PIL import Image
-import os, re
+import os, re, random
 
-TOKEN = "<api_token>"
+TOKEN = os.environ.get("TOKEN", "")
+URL_WEBHOOK = os.environ.get("URL", "https://mbasic.facebook.com")
+if not URL_WEBHOOK.endswith("/"):
+	URL_WEBHOOK += "/"
+
 bot = TeleBot(TOKEN)
+server = Flask(__name__)
 
 list_image = {}
 
@@ -61,10 +67,23 @@ def done(message):
 		bot.send_message(message.from_user.id, "No image !!")
 		return
 
-	path = str(message.from_user.id) + ".pdf"
+	path = str(random.randint(0, 100000)) + ".pdf"
 	images[0].save(path, save_all = True, append_images = images[1:])
 	bot.send_document(message.from_user.id, open(path, "rb"), caption = "Here your pdf !!")
 	os.remove(path)
 
-print("Bot started !!")
-bot.polling(none_stop = True)
+@server.route("/" + TOKEN, methods = ["POST"])
+def getMessage():
+    json_string = request.get_data().decode()
+    update = types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return "!"
+
+@server.route("/")
+def webhook():
+	bot.remove_webhook()
+	bot.set_webhook(URL_WEBHOOK + TOKEN)
+	return "!"
+
+if __name__ == "__main__":
+	server.run(debug = True)
